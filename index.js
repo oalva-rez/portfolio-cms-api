@@ -20,7 +20,10 @@ app.get("/", (req, res) => {
 app.post("/api/login", async (req, res) => {
   try {
     const user = await User.findOne({
-      username: req.body.username,
+      $or: [
+        { username: req.body.usernameOrEmail },
+        { email: req.body.usernameOrEmail },
+      ],
     });
     const isPasswordValid = await bcrypt.compare(
       req.body.password,
@@ -72,6 +75,7 @@ app.post("/api/register", async (req, res) => {
       username: req.body.username,
       password: req.body.password,
       siteName: req.body.siteName,
+      email: req.body.email,
     });
     console.log(user);
     res.json({ status: "success" });
