@@ -1,14 +1,12 @@
-const { log } = require("console");
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
-require("dotenv").config();
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
-const User = require("./models/user.model");
 const loginRouter = require("./routes/api/login");
 const registerRouter = require("./routes/api/register");
-const dashboardRouter = require("./routes/api/dashboard");
+const dashboardRouter = require("./routes/api/dashboard/dashboard");
+
+require("dotenv").config();
+
 const app = express();
 
 mongoose.set("strictQuery", true);

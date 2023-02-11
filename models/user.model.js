@@ -9,6 +9,7 @@ const User = new mongoose.Schema(
       unique: [true, "Email is already taken"],
       trim: true,
       minlength: [3, "Email must be at least 3 characters long"],
+      lowercase: true,
     },
     username: {
       type: String,
@@ -16,6 +17,7 @@ const User = new mongoose.Schema(
       unique: [true, "Username is already taken"],
       trim: true,
       minlength: [3, "Username must be at least 3 characters long"],
+      lowercase: true,
     },
     password: {
       type: String,
@@ -29,6 +31,7 @@ const User = new mongoose.Schema(
       trim: true,
       minlength: 3,
     },
+    // projects: [],
   },
   { collection: "user-data" }
 );

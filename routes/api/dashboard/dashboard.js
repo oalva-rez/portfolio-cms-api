@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const jwt = require("jsonwebtoken");
-const User = require("../../models/user.model");
+const User = require("../../../models/user.model");
 
 router.get("/", async (req, res) => {
   const token = req.headers["authorization"].split(" ")[1];
@@ -15,7 +15,7 @@ router.get("/", async (req, res) => {
     return res.json({ status: "Invalid Token", user: false });
   }
 });
-router.post("/", async (req, res) => {
+router.post("/my-projects/create", async (req, res) => {
   const token = req.headers["authorization"].split(" ")[1];
   if (!token) return res.json({ status: "No Token", user: false });
   try {
