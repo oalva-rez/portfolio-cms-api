@@ -3,17 +3,10 @@ const router = express.Router();
 const jwt = require("jsonwebtoken");
 const User = require("../../../models/user.model");
 
+// @route   GET api/dashboard
+// @desc    Get user data and auth
 router.get("/", async (req, res) => {
-  const token = req.headers["authorization"].split(" ")[1];
-  if (!token) return res.json({ status: "No Token", user: false });
-  try {
-    const verified = jwt.verify(token, process.env.TOKEN_SECRET);
-    const username = verified.user.username;
-    const user = await User.findOne({ username });
-    return res.json({ status: "User Found", user });
-  } catch (error) {
-    return res.json({ status: "Invalid Token", user: false });
-  }
+  res.json({ status: "successfully verified", user: req.user });
 });
 router.post("/my-projects/create", async (req, res) => {
   const token = req.headers["authorization"].split(" ")[1];

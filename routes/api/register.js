@@ -11,9 +11,9 @@ router.post("/", async (req, res) => {
       email: req.body.email,
     });
     console.log(user);
-    res.json({ status: "success" });
+    res.json({ status: "success", error: false });
   } catch (error) {
-    res.json({ status: "Error", error });
+    res.status(500).json({ status: "Error", error });
   }
 });
 

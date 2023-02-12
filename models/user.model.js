@@ -31,7 +31,6 @@ const User = new mongoose.Schema(
       trim: true,
       minlength: 3,
     },
-    // projects: [],
   },
   { collection: "user-data" }
 );
