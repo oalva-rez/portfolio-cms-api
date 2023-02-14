@@ -1,5 +1,47 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
+// const Project = require("./project.model");
+
+const Project = new mongoose.Schema({
+  projectId: {
+    type: String,
+    required: [true, "Project id is required"],
+  },
+  title: {
+    type: String,
+    required: [true, "Project name is required"],
+    trim: true,
+    minlength: [3, "Project name must be at least 3 characters long"],
+    lowercase: true,
+  },
+  description: {
+    type: String,
+    required: [true, "Project description is required"],
+    trim: true,
+    minlength: [3, "Project description must be at least 3 characters long"],
+    lowercase: true,
+  },
+  githubUrl: {
+    type: String,
+    required: [true, "Project github url is required"],
+    trim: true,
+    minlength: [3, "Project github url must be at least 3 characters long"],
+    lowercase: true,
+  },
+  liveUrl: {
+    type: String,
+    required: [true, "Project live url is required"],
+    trim: true,
+    minlength: [3, "Project live url must be at least 3 characters long"],
+    lowercase: true,
+  },
+  techSelect: {
+    type: String,
+  },
+  image: {
+    type: String,
+  },
+});
 
 const User = new mongoose.Schema(
   {
@@ -31,6 +73,7 @@ const User = new mongoose.Schema(
       trim: true,
       minlength: 3,
     },
+    projects: [Project],
   },
   { collection: "user-data" }
 );

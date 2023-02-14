@@ -7,6 +7,8 @@ const dashboardRouter = require("./routes/api/dashboard/dashboard");
 const verifyUser = require("./middleware/verifyUser");
 const upload = require("./controllers/fileUploader");
 const Grid = require("gridfs-stream");
+const { nanoid } = require("nanoid");
+const User = require("./models/user.model");
 
 require("dotenv").config();
 
@@ -27,31 +29,74 @@ app.get("/", (req, res) => {
 });
 
 app.post("/upload", (req, res) => {
+  // get project data from req.body
+  // use nanoid to create unique project id and set it to the file meta data along with the project
+
+  User.findOne({ _id: req.user._id }, (err, user) => {
+    if (err) {
+      res.status(500).json({ error: err });
+    } else {
+      const projId = nanoid();
+      user.projects.push({
+        projectId: projId,
+        title: req.body.title,
+        description: req.body.description,
+        githubUrl: req.body.githubUrl,
+        liveUrl: req.body.liveUrl,
+        techSelect: req.body.techSelect,
+      });
+      user.save();
+      req.body.projId = projId;
+    }
+  });
+
   upload(req, res, (err) => {
     if (err) {
       res.status(500).json({ error: err });
     } else {
-      // res.json({ file: req.file });
-      console.log(req.body);
-      res.json({ success: true });
+      console.log(req.file);
+      if (req.file === undefined) {
+        res.status(400).json({ error: "No File Selected" });
+      } else {
+        console.log(req.body);
+        User.findOne({ _id: req.user._id }, (err, user) => {
+          if (err) {
+            res.status(500).json({ error: err });
+          } else {
+            user.projects.forEach((project) => {
+              if (project.projectId === req.body.projId) {
+                project.image = req.file.filename;
+                console.log("user saved 2");
+                user.save();
+              }
+            });
+          }
+        });
+        res.json({
+          file: `/${req.file.filename}`,
+        });
+      }
     }
   });
 });
-app.get("/files", (req, res) => {
+app.get("/files/", (req, res) => {
   const db = mongoose.connections[0].db;
-  gfs = Grid(db, mongoose.mongo);
-  gfs.collection("uploads");
-
-  gfs.files.find().toArray((err, files) => {
-    if (!files || files.length === 0) {
-      return res.status(404).json({
-        err: "No files exist",
-      });
-    }
-    console.log("running");
-    return res.json(files);
-  });
+  gfs = new mongoose.mongo.GridFSBucket(db, { bucketName: "uploads" });
+  const FILENAME_STATIC = "bf182930102edf486afaded185f1f460.png";
+  gfs
+    .find({
+      filename: FILENAME_STATIC,
+    })
+    .toArray((err, files) => {
+      if (!files || files.length === 0) {
+        return res.status(404).json({
+          error: "No files exist",
+        });
+      }
+      gfs.openDownloadStreamByName(files[0].filename).pipe(res);
+    });
 });
+
 app.listen(3001, () => {
   console.log("Example app listening on port 3001!");
 });

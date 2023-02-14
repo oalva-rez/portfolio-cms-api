@@ -13,11 +13,9 @@ require("dotenv").config();
 app.use(methodOverride("_method"));
 
 let gfs;
-console.log(process.env.MONGO_STRING);
 mongoose.connection.on("connected", () => {
   const db = mongoose.connections[0].db;
-  gfs = Grid(db, mongoose.mongo);
-  gfs.collection("uploads");
+  gfs = new mongoose.mongo.GridFSBucket(db, { bucketName: "uploads" });
 });
 
 // Create Storage Engine
@@ -34,7 +32,7 @@ const storage = new GridFsStorage({
           filename: filename,
           bucketName: "uploads",
           metadata: {
-            projName: req.body.projName,
+            _id: req.user._id,
           },
         };
         resolve(fileInfo);
