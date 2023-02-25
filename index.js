@@ -29,13 +29,11 @@ app.get("/", (req, res) => {
 });
 
 app.post("/upload", (req, res) => {
-  // get project data from req.body
-  // use nanoid to create unique project id and set it to the file meta data along with the project
-
   User.findOne({ _id: req.user._id }, (err, user) => {
     if (err) {
       res.status(500).json({ error: err });
     } else {
+      console.log(req.body.imageFileName);
       const projId = nanoid();
       user.projects.push({
         projectId: projId,
@@ -44,9 +42,9 @@ app.post("/upload", (req, res) => {
         githubUrl: req.body.githubUrl,
         liveUrl: req.body.liveUrl,
         techSelect: req.body.techSelect,
+        imageFileName: req.body.imageFileName,
       });
       user.save();
-      req.body.projId = projId;
     }
   });
 
@@ -54,7 +52,6 @@ app.post("/upload", (req, res) => {
     if (err) {
       res.status(500).json({ error: err });
     } else {
-      console.log(req.file);
       if (req.file === undefined) {
         res.status(400).json({ error: "No File Selected" });
       } else {
@@ -66,7 +63,6 @@ app.post("/upload", (req, res) => {
             user.projects.forEach((project) => {
               if (project.projectId === req.body.projId) {
                 project.image = req.file.filename;
-                console.log("user saved 2");
                 user.save();
               }
             });
@@ -79,10 +75,15 @@ app.post("/upload", (req, res) => {
     }
   });
 });
-app.get("/files/", (req, res) => {
+app.get("/files", (req, res) => {
   const db = mongoose.connections[0].db;
   gfs = new mongoose.mongo.GridFSBucket(db, { bucketName: "uploads" });
   const FILENAME_STATIC = "bf182930102edf486afaded185f1f460.png";
+  async function getUser() {
+    const user = await User.findOne({ _id: req.user._id });
+    
+  }
+  
   gfs
     .find({
       filename: FILENAME_STATIC,
