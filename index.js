@@ -15,7 +15,9 @@ const mongoString = process.env.MONGO_STRING;
 const app = express();
 app.use(express.json());
 app.use(cors());
+
 app.use(verifyUser);
+
 mongoose.set("strictQuery", true);
 mongoose.connect(mongoString);
 
