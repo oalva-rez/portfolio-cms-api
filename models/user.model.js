@@ -1,7 +1,41 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
-// const Project = require("./project.model");
 
+const Blog = new mongoose.Schema({
+  blogId: {
+    type: String,
+    required: [true, "Blog id is required"],
+  },
+  title: {
+    type: String,
+    required: [true, "Blog title is required"],
+    trim: true,
+    minlength: [3, "Blog title must be at least 3 characters long"],
+  },
+  body: {
+    type: String,
+    required: [true, "Blog body is required"],
+    minlength: [3, "Blog body must be at least 3 characters long"],
+  },
+  featuredImage: {
+    type: String,
+    required: [true, "Blog featured image is required"],
+  },
+  metaTitle: {
+    type: String,
+    required: [true, "Blog meta title is required"],
+    trim: true,
+  },
+  metaDescription: {
+    type: String,
+    required: [true, "Blog meta description is required"],
+    trim: true,
+  },
+  metaKeywords: {
+    type: String,
+    required: [true, "Blog meta keywords are required"],
+  },
+});
 const Project = new mongoose.Schema({
   projectId: {
     type: String,
@@ -72,7 +106,11 @@ const User = new mongoose.Schema(
       trim: true,
       minlength: 3,
     },
+    apiKey: {
+      type: String,
+    },
     projects: [Project],
+    blogs: [Blog],
   },
   { collection: "user-data" }
 );

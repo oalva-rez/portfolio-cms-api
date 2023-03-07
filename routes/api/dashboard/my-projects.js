@@ -66,17 +66,19 @@ router.get("/", async (req, res) => {
       } else {
         // on success - return user's projects
         let projects = [];
-        for (let project of user.projects) {
-          const getObjectParams = {
-            Bucket: bucketName,
-            Key: project.imageName,
-          };
+        if (user.projects) {
+          for (let project of user.projects) {
+            const getObjectParams = {
+              Bucket: bucketName,
+              Key: project.imageName,
+            };
 
-          // Get signed image URL
-          const command = new GetObjectCommand(getObjectParams);
-          const url = await getSignedUrl(s3, command, { expiresIn: 3600 });
-          project.imageUrl = url; // add image url to project object
-          projects.push(project);
+            // Get signed image URL
+            const command = new GetObjectCommand(getObjectParams);
+            const url = await getSignedUrl(s3, command, { expiresIn: 3600 });
+            project.imageUrl = url; // add image url to project object
+            projects.push(project);
+          }
         }
         // save user to update the session
         Promise.all(projects).then((projects) => {
@@ -160,7 +162,6 @@ router.delete("/:id", async (req, res) => {
         let project = user.projects.find(
           (proj) => proj.projectId === req.params.id
         );
-        console.log(req.params.id);
         const params = {
           Bucket: bucketName,
           Key: project.imageName,

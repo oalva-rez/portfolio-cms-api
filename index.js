@@ -5,7 +5,7 @@ const loginRouter = require("./routes/api/login");
 const registerRouter = require("./routes/api/register");
 const dashboardRouter = require("./routes/api/dashboard/dashboard");
 const myProjectsRouter = require("./routes/api/dashboard/my-projects");
-
+const myBlogRouter = require("./routes/api/dashboard/my-blog");
 const verifyUser = require("./middleware/verifyUser");
 
 require("dotenv").config();
@@ -25,6 +25,7 @@ app.use("/api/login", loginRouter);
 app.use("/api/register", registerRouter);
 app.use("/api/dashboard", dashboardRouter);
 app.use("/api/dashboard/my-projects", myProjectsRouter);
+app.use("/api/dashboard/my-blog", myBlogRouter);
 
 app.listen(3001, () => {
   console.log("Example app listening on port 3001!");
