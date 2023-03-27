@@ -11,7 +11,6 @@ const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 const crypto = require("crypto");
 const sharp = require("sharp");
 const { nanoid } = require("nanoid");
-const { log } = require("console");
 
 require("dotenv").config();
 

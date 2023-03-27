@@ -27,6 +27,6 @@ app.use("/api/dashboard", dashboardRouter);
 app.use("/api/dashboard/my-projects", myProjectsRouter);
 app.use("/api/dashboard/my-blog", myBlogRouter);
 
-app.listen(3001, () => {
-  console.log("Example app listening on port 3001!");
+app.listen(3005, () => {
+  console.log("Example app listening on port 3005!");
 });

@@ -14,7 +14,6 @@ router.post("/", async (req, res) => {
         { email: req.body.usernameOrEmail },
       ],
     });
-
     const isPasswordValid = await bcrypt.compare(
       req.body.password,
       user.password

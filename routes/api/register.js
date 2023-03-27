@@ -1,16 +1,20 @@
 const express = require("express");
 const router = express.Router();
 const User = require("../../models/user.model");
+const bcrypt = require("bcrypt");
 
 router.post("/", async (req, res) => {
   try {
+    const salt = await bcrypt.genSalt();
+    const hashedPassword = await bcrypt.hash(req.body.password, salt);
+
     const user = await User.create({
       username: req.body.username,
-      password: req.body.password,
+      password: hashedPassword,
       siteName: req.body.siteName,
       email: req.body.email,
     });
-    console.log(user);
+    user.save();
     res.json({ status: "success", error: false });
   } catch (error) {
     res.status(500).json({ status: "Error", error });

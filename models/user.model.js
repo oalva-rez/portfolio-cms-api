@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const bcrypt = require("bcrypt");
 
 const Blog = new mongoose.Schema({
   blogId: {
@@ -17,9 +16,11 @@ const Blog = new mongoose.Schema({
     required: [true, "Blog body is required"],
     minlength: [3, "Blog body must be at least 3 characters long"],
   },
-  featuredImage: {
+  imageName: {
     type: String,
-    required: [true, "Blog featured image is required"],
+  },
+  imageUrl: {
+    type: String,
   },
   metaTitle: {
     type: String,
@@ -34,6 +35,16 @@ const Blog = new mongoose.Schema({
   metaKeywords: {
     type: String,
     required: [true, "Blog meta keywords are required"],
+  },
+  status: {
+    type: String,
+    required: [true, "Blog status is required"],
+  },
+  createdAt: {
+    type: String,
+  },
+  updatedAt: {
+    type: String,
   },
 });
 const Project = new mongoose.Schema({
@@ -97,7 +108,6 @@ const User = new mongoose.Schema(
     password: {
       type: String,
       required: [true, "Password is required"],
-      trim: true,
       minlength: [6, "Password must be at least 6 characters long"],
     },
     siteName: {
@@ -114,11 +124,7 @@ const User = new mongoose.Schema(
   },
   { collection: "user-data" }
 );
-User.pre("save", async function (next) {
-  const salt = await bcrypt.genSalt();
-  this.password = await bcrypt.hash(this.password, salt);
-  next();
-});
+
 const model = mongoose.model("User", User);
 
 module.exports = model;

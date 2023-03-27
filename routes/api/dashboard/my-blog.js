@@ -11,18 +11,19 @@ const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 const crypto = require("crypto");
 const sharp = require("sharp");
 const { nanoid } = require("nanoid");
-const { log } = require("console");
 
 require("dotenv").config();
 
 const randomImageName = (bytes = 32) =>
   crypto.randomBytes(bytes).toString("hex");
 
-// create new project
-router.post("/create", upload.single("featuredImage"), async (req, res) => {
+// create new blog
+
+router.post("/create", upload.single("blogImage"), async (req, res) => {
   try {
     // If i wish to resize image, change the Body to buffer
     // const buffer = await sharp(req.file.buffer).resize({height: 1920, width: 1080, fit: 'contain'}).toBuffer
+
     const imageName = randomImageName();
     const params = {
       Bucket: bucketName,
@@ -42,12 +43,14 @@ router.post("/create", upload.single("featuredImage"), async (req, res) => {
           blogId: blogId,
           title: req.body.title,
           body: req.body.body,
-          featuredImage: imageName,
+          imageName: imageName,
           metaTitle: req.body.metaTitle,
           metaDescription: req.body.metaDescription,
           metaKeywords: req.body.metaKeywords,
+          status: req.body.status,
+          createdAt: new Date().toISOString(),
+          updatedAt: null,
         });
-        console.log(user.blogs);
         user.save();
       }
     });
@@ -60,26 +63,24 @@ router.post("/create", upload.single("featuredImage"), async (req, res) => {
 // get all blog posts
 router.get("/", async (req, res) => {
   try {
-    console.log("running");
     User.findOne({ _id: req.user._id }, async (err, user) => {
       if (err) {
         // on error
         res.status(500).json({ error: err });
       } else {
-        // on success - return user's projects
-        console.log(user.blogs);
+        // on success - return user's blogs
         let blogs = [];
         if (user.blogs) {
           for (let blog of user.blogs) {
             const getObjectParams = {
               Bucket: bucketName,
-              Key: blog.featuredImage,
+              Key: blog.imageName,
             };
 
             // Get signed image URL
             const command = new GetObjectCommand(getObjectParams);
             const url = await getSignedUrl(s3, command, { expiresIn: 3600 });
-            blog.featuredImage = url; // add image url to project object
+            blog.imageUrl = url; // add image url to blog object
             blogs.push(blog);
           }
         }
@@ -95,63 +96,61 @@ router.get("/", async (req, res) => {
   }
 });
 
-// // get project by id
-// router.get("/:id", async (req, res) => {
-//   try {
-//     User.findOne({ _id: req.user._id }, async (err, user) => {
-//       if (err) {
-//         // on error
-//         res.status(500).json({ error: err });
-//       } else {
-//         // on success - return user's projects
-//         let project = user.projects.find(
-//           (project) => project.projectId === req.params.id
-//         );
-//         res.json({ status: "success", project });
-//       }
-//     });
-//   } catch (error) {
-//     res.json({ status: "error", error: error });
-//   }
-// });
+// get blog by id
+router.get("/:id", async (req, res) => {
+  try {
+    User.findOne({ _id: req.user._id }, async (err, user) => {
+      if (err) {
+        // on error
+        res.status(500).json({ error: err });
+      } else {
+        // on success - return user's blog post
+        let blog = user.blogs.find((blog) => blog.blogId === req.params.id);
+        res.json({ status: "success", blog });
+      }
+    });
+  } catch (error) {
+    res.json({ status: "error", error: error });
+  }
+});
 
-// // update project by id
-// router.put("/:id", upload.single("projImage"), async (req, res) => {
-//   try {
-//     User.findOne({ _id: req.user._id }, async (err, user) => {
-//       if (err) {
-//         // on error
-//         res.status(500).json({ error: err });
-//       } else {
-//         // on success - return user's projects
-//         let project = user.projects.find(
-//           (project) => project.projectId === req.params.id
-//         );
-//         if (req.file) {
-//           const imageName = randomImageName();
-//           const params = {
-//             Bucket: bucketName,
-//             Key: imageName,
-//             Body: req.file.buffer,
-//             ContentType: req.file.mimetype,
-//           };
-//           const command = new PutObjectCommand(params);
-//           await s3.send(command);
-//           project.imageName = imageName;
-//         }
-//         project.title = req.body.title;
-//         project.description = req.body.description;
-//         project.githubUrl = req.body.githubUrl;
-//         project.liveUrl = req.body.liveUrl;
-//         project.techSelect = req.body.techSelect;
-//         user.save();
-//         res.json({ status: "success", project });
-//       }
-//     });
-//   } catch (error) {
-//     res.json({ status: "error", error: error });
-//   }
-// });
+// update blog by id
+router.put("/:id", upload.single("blogImage"), async (req, res) => {
+  try {
+    User.findOne({ _id: req.user._id }, async (err, user) => {
+      if (err) {
+        // on error
+        res.status(500).json({ error: err });
+      } else {
+        // on success - return user's blog posts
+        let blog = user.blogs.find((blog) => blog.blogId === req.params.id);
+        if (req.file) {
+          const imageName = randomImageName();
+          const params = {
+            Bucket: bucketName,
+            Key: imageName,
+            Body: req.file.buffer,
+            ContentType: req.file.mimetype,
+          };
+          const command = new PutObjectCommand(params);
+          await s3.send(command);
+          blog.imageName = imageName;
+        }
+        blog.title = req.body.title;
+        blog.body = req.body.body;
+        blog.metaTitle = req.body.metaTitle;
+        blog.metaDescription = req.body.metaDescription;
+        blog.metaKeywords = req.body.metaKeywords;
+        blog.status = req.body.status;
+        blog.updatedAt = new Date().toISOString();
+        user.save();
+        res.json({ status: "success", blog });
+      }
+    });
+  } catch (error) {
+    res.json({ status: "error", error: error });
+  }
+});
 
 // //delete project by id
 // router.delete("/:id", async (req, res) => {
