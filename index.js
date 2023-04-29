@@ -6,6 +6,7 @@ const registerRouter = require("./routes/api/register");
 const dashboardRouter = require("./routes/api/dashboard/dashboard");
 const myProjectsRouter = require("./routes/api/dashboard/my-projects");
 const myBlogRouter = require("./routes/api/dashboard/my-blog");
+const userRouter = require("./routes/api/my-api");
 const verifyUser = require("./middleware/verifyUser");
 
 require("dotenv").config();
@@ -15,11 +16,13 @@ const mongoString = process.env.MONGO_STRING;
 const app = express();
 app.use(express.json());
 app.use(cors());
-
-app.use(verifyUser);
-
 mongoose.set("strictQuery", true);
 mongoose.connect(mongoString);
+
+// above the middleware because it doesn't need to be authenticated
+app.use("/api/users", userRouter);
+
+app.use(verifyUser);
 
 app.use("/api/login", loginRouter);
 app.use("/api/register", registerRouter);

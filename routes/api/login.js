@@ -19,6 +19,7 @@ router.post("/", async (req, res) => {
       user.password
     );
     if (isPasswordValid) {
+      console.log({ user }, process.env.TOKEN_SECRET);
       const token = jwt.sign({ user }, process.env.TOKEN_SECRET);
       return res.json({ status: "User Found", token, user, error: false });
     } else {
@@ -30,9 +31,9 @@ router.post("/", async (req, res) => {
     }
   } catch (error) {
     res.json({
-      status: "User Not Found",
+      status: "Server Error",
       user: false,
-      error: "Invalid username/password",
+      error: "Something went wrong. Please try again later.",
     });
   }
 });
