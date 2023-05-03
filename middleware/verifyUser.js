@@ -4,6 +4,7 @@ const User = require("../models/user.model");
 const { verify } = require("crypto");
 
 module.exports = async (req, res, next) => {
+  // If the user is trying to login or register or , skip this middleware
   const token = req.headers["authorization"]?.split(" ")[1];
   if (!token) return res.json({ status: "No Token", user: false });
   try {
