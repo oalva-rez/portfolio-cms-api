@@ -76,6 +76,12 @@ const Project = new mongoose.Schema({
     trim: true,
     minlength: [3, "Project live url must be at least 3 characters long"],
   },
+  featured: {
+    type: Boolean,
+  },
+  wip: {
+    type: Boolean,
+  },
   techSelect: {
     type: String,
   },

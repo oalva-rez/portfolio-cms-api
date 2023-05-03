@@ -43,6 +43,8 @@ router.post("/create", upload.single("projImage"), async (req, res) => {
           description: req.body.description,
           githubUrl: req.body.githubUrl,
           liveUrl: req.body.liveUrl,
+          featured: req.body.featured,
+          wip: req.body.wip,
           techSelect: req.body.techSelect,
           imageName: imageName,
         });
@@ -138,6 +140,8 @@ router.put("/:id", upload.single("projImage"), async (req, res) => {
         project.title = req.body.title;
         project.description = req.body.description;
         project.githubUrl = req.body.githubUrl;
+        project.featured = req.body.featured;
+        project.wip = req.body.wip;
         project.liveUrl = req.body.liveUrl;
         project.techSelect = req.body.techSelect;
         user.save();
