@@ -5,8 +5,6 @@ const { verify } = require("crypto");
 
 module.exports = async (req, res, next) => {
   console.log("running verifyUser middleware");
-  // If the user is trying to login or register or , skip this middleware
-  if (req.path === "/api/login" || req.path === "/api/register") return next();
   const token = req.headers["authorization"]?.split(" ")[1];
   if (!token) return res.json({ status: "No Token", user: false });
   try {
