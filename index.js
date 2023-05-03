@@ -19,16 +19,13 @@ app.use(cors());
 mongoose.set("strictQuery", true);
 mongoose.connect(mongoString);
 
-// above the middleware because it doesn't need to be authenticated
 app.use("/api/users", userRouter);
-
-app.use(verifyUser);
-
 app.use("/api/login", loginRouter);
 app.use("/api/register", registerRouter);
-app.use("/api/dashboard", dashboardRouter);
-app.use("/api/dashboard/my-projects", myProjectsRouter);
-app.use("/api/dashboard/my-blog", myBlogRouter);
+
+app.use("/api/dashboard", verifyUser, dashboardRouter);
+app.use("/api/dashboard/my-projects", verifyUser, myProjectsRouter);
+app.use("/api/dashboard/my-blog", verifyUser, myBlogRouter);
 
 app.listen(3005, () => {
   console.log("Example app listening on port 3005!");
