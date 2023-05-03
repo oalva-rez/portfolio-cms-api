@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const User = require("../../models/user.model");
-// @route   POST api/users
+// @route   GET api/users
 // @desc    Get users content
 
 router.get("/all", async (req, res) => {
