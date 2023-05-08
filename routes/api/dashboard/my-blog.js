@@ -140,7 +140,7 @@ router.put("/:id", upload.single("blogImage"), async (req, res) => {
         blog.body = req.body.body;
         blog.metaTitle = req.body.metaTitle;
         blog.metaDescription = req.body.metaDescription;
-        blog.metaKeywords = req.body.metaKeywords;
+        blog.metaKeywords = JSON.parse(req.body.metaKeywords);
         blog.status = req.body.status;
         blog.updatedAt = new Date().toISOString();
         user.save();
