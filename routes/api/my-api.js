@@ -14,7 +14,6 @@ router.get("/all", async (req, res) => {
 router.get("/projects", async (req, res) => {
   const apiKey = req.headers["x-api-key"];
   const user = await User.findOne({ apiKey }).select("projects");
-  console.log(user);
 
   res.json({ status: "success", user });
 });

@@ -46,7 +46,7 @@ router.post("/create", upload.single("blogImage"), async (req, res) => {
           imageName: imageName,
           metaTitle: req.body.metaTitle,
           metaDescription: req.body.metaDescription,
-          metaKeywords: req.body.metaKeywords,
+          metaKeywords: JSON.parse(req.body.metaKeywords),
           status: req.body.status,
           createdAt: new Date().toISOString(),
           updatedAt: null,
@@ -152,34 +152,30 @@ router.put("/:id", upload.single("blogImage"), async (req, res) => {
   }
 });
 
-// //delete project by id
-// router.delete("/:id", async (req, res) => {
-//   try {
-//     User.findOne({ _id: req.user._id }, async (err, user) => {
-//       if (err) {
-//         // on error
-//         res.status(500).json({ error: err });
-//       } else {
-//         // on success - return user's projects
-//         let project = user.projects.find(
-//           (proj) => proj.projectId === req.params.id
-//         );
-//         const params = {
-//           Bucket: bucketName,
-//           Key: project.imageName,
-//         };
-//         const command = new DeleteObjectCommand(params);
-//         await s3.send(command);
-//         user.projects = user.projects.filter(
-//           (project) => project.projectId !== req.params.id
-//         );
-//         user.save();
-//         res.json({ status: "success" });
-//       }
-//     });
-//   } catch (error) {
-//     res.json({ status: "error", error: error });
-//   }
-// });
+//delete blog by id
+router.delete("/:id", async (req, res) => {
+  try {
+    User.findOne({ _id: req.user._id }, async (err, user) => {
+      if (err) {
+        // on error
+        res.status(500).json({ error: err });
+      } else {
+        // on success - return user's blog posts
+        let blogs = user.blogs.find((blog) => blog.blogId === req.params.id);
+        const params = {
+          Bucket: bucketName,
+          Key: blogs.imageName,
+        };
+        const command = new DeleteObjectCommand(params);
+        await s3.send(command);
+        user.blogs = user.blogs.filter((blog) => blog.blogId !== req.params.id);
+        user.save();
+        res.json({ status: "success" });
+      }
+    });
+  } catch (error) {
+    res.json({ status: "error", error: error });
+  }
+});
 
 module.exports = router;

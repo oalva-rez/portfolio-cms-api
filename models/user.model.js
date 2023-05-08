@@ -33,7 +33,7 @@ const Blog = new mongoose.Schema({
     trim: true,
   },
   metaKeywords: {
-    type: String,
+    type: Array,
     required: [true, "Blog meta keywords are required"],
   },
   status: {
