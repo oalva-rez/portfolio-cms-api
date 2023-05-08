@@ -37,6 +37,7 @@ router.post("/create", upload.single("projImage"), async (req, res) => {
         res.status(500).json({ error: err });
       } else {
         const projId = nanoid();
+        const newTechSelect = JSON.parse(req.body.techSelect);
         user.projects.push({
           projectId: projId,
           title: req.body.title,
@@ -45,7 +46,7 @@ router.post("/create", upload.single("projImage"), async (req, res) => {
           liveUrl: req.body.liveUrl,
           featured: req.body.featured,
           wip: req.body.wip,
-          techSelect: req.body.techSelect,
+          techSelect: newTechSelect,
           imageName: imageName,
         });
         user.save();

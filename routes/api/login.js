@@ -19,7 +19,6 @@ router.post("/", async (req, res) => {
       user.password
     );
     if (isPasswordValid) {
-      console.log({ user }, process.env.TOKEN_SECRET);
       const token = jwt.sign({ user }, process.env.TOKEN_SECRET);
       return res.json({ status: "User Found", token, user, error: false });
     } else {

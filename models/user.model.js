@@ -83,7 +83,7 @@ const Project = new mongoose.Schema({
     type: Boolean,
   },
   techSelect: {
-    type: String,
+    type: Array,
   },
   imageName: {
     type: String,
