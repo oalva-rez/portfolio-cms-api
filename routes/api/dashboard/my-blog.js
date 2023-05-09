@@ -2,12 +2,8 @@ const express = require("express");
 const router = express.Router();
 const User = require("../../../models/user.model");
 const { s3, bucketName, upload } = require("../../../controllers/aws-sdk");
-const {
-  GetObjectCommand,
-  PutObjectCommand,
-  DeleteObjectCommand,
-} = require("@aws-sdk/client-s3");
-const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
+const { PutObjectCommand, DeleteObjectCommand } = require("@aws-sdk/client-s3");
+const { getSignedImageURL } = require("../../../helpers/getSignedURL");
 const crypto = require("crypto");
 const sharp = require("sharp");
 const { nanoid } = require("nanoid");
@@ -72,14 +68,7 @@ router.get("/", async (req, res) => {
         let blogs = [];
         if (user.blogs) {
           for (let blog of user.blogs) {
-            const getObjectParams = {
-              Bucket: bucketName,
-              Key: blog.imageName,
-            };
-
-            // Get signed image URL
-            const command = new GetObjectCommand(getObjectParams);
-            const url = await getSignedUrl(s3, command, { expiresIn: 3600 });
+            const url = await getSignedImageURL(blog);
             blog.imageUrl = url; // add image url to blog object
             blogs.push(blog);
           }

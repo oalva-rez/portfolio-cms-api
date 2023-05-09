@@ -7,7 +7,6 @@ const User = require("../../models/user.model");
 router.get("/all", async (req, res) => {
   const apiKey = req.headers["x-api-key"];
   const user = await User.findOne({ apiKey }).select("projects blogs");
-
   res.json({ status: "success", user });
 });
 

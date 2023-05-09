@@ -2,12 +2,8 @@ const express = require("express");
 const router = express.Router();
 const User = require("../../../models/user.model");
 const { s3, bucketName, upload } = require("../../../controllers/aws-sdk");
-const {
-  GetObjectCommand,
-  PutObjectCommand,
-  DeleteObjectCommand,
-} = require("@aws-sdk/client-s3");
-const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
+const { PutObjectCommand, DeleteObjectCommand } = require("@aws-sdk/client-s3");
+const { getSignedImageURL } = require("../../../helpers/getSignedURL");
 const crypto = require("crypto");
 const sharp = require("sharp");
 const { nanoid } = require("nanoid");
@@ -37,7 +33,6 @@ router.post("/create", upload.single("projImage"), async (req, res) => {
         res.status(500).json({ error: err });
       } else {
         const projId = nanoid();
-        const newTechSelect = JSON.parse(req.body.techSelect);
         user.projects.push({
           projectId: projId,
           title: req.body.title,
@@ -46,7 +41,7 @@ router.post("/create", upload.single("projImage"), async (req, res) => {
           liveUrl: req.body.liveUrl,
           featured: req.body.featured,
           wip: req.body.wip,
-          techSelect: newTechSelect,
+          techSelect: JSON.parse(req.body.techSelect),
           imageName: imageName,
         });
         user.save();
@@ -70,14 +65,7 @@ router.get("/", async (req, res) => {
         let projects = [];
         if (user.projects) {
           for (let project of user.projects) {
-            const getObjectParams = {
-              Bucket: bucketName,
-              Key: project.imageName,
-            };
-
-            // Get signed image URL
-            const command = new GetObjectCommand(getObjectParams);
-            const url = await getSignedUrl(s3, command, { expiresIn: 3600 });
+            const url = await getSignedImageURL(project);
             project.imageUrl = url; // add image url to project object
             projects.push(project);
           }
@@ -144,7 +132,7 @@ router.put("/:id", upload.single("projImage"), async (req, res) => {
         project.featured = req.body.featured;
         project.wip = req.body.wip;
         project.liveUrl = req.body.liveUrl;
-        project.techSelect = req.body.techSelect;
+        project.techSelect = JSON.parse(req.body.techSelect);
         user.save();
         res.json({ status: "success", project });
       }
