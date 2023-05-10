@@ -36,6 +36,9 @@ const Blog = new mongoose.Schema({
     type: Array,
     required: [true, "Blog meta keywords are required"],
   },
+  slug: {
+    type: String,
+  },
   status: {
     type: String,
     required: [true, "Blog status is required"],

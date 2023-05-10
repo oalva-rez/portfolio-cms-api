@@ -3,6 +3,8 @@ const router = express.Router();
 const User = require("../../models/user.model");
 const { getAllProjects } = require("../../controllers/projectsController");
 const { getAllBlogs } = require("../../controllers/blogsController");
+const { getBlogBySlug } = require("../../controllers/blogsController");
+
 // @route   GET api/users
 // @desc    Get users content
 
@@ -15,5 +17,7 @@ router.get("/all", async (req, res) => {
 router.get("/projects", getAllProjects);
 
 router.get("/blogs", getAllBlogs);
+
+router.get("/blogs/:slug", getBlogBySlug);
 
 module.exports = router;

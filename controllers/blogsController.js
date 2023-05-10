@@ -5,6 +5,7 @@ const { getSignedImageURL } = require("../helpers/getSignedURL");
 const crypto = require("crypto");
 const sharp = require("sharp");
 const { nanoid } = require("nanoid");
+const slug = require("slug");
 
 require("dotenv").config();
 
@@ -64,6 +65,7 @@ const createNewBlog = async (req, res) => {
       if (err) {
         res.status(500).json({ error: err });
       } else {
+        // create slug from title
         const blogId = nanoid();
         user.blogs.push({
           blogId: blogId,
@@ -73,6 +75,7 @@ const createNewBlog = async (req, res) => {
           metaTitle: req.body.metaTitle,
           metaDescription: req.body.metaDescription,
           metaKeywords: JSON.parse(req.body.metaKeywords),
+          slug: slug(req.body.title, { lower: true }),
           status: req.body.status,
           createdAt: new Date().toISOString(),
           updatedAt: null,
@@ -97,6 +100,25 @@ const getBlogById = async (req, res) => {
       } else {
         // on success - return user's blog post
         let blog = user.blogs.find((blog) => blog.blogId === req.params.id);
+        res.json({ status: "success", blog });
+      }
+    });
+  } catch (error) {
+    res.json({ status: "error", error: error });
+  }
+};
+
+// @desc Get blog by slug
+// @route GET /:slug
+const getBlogBySlug = async (req, res) => {
+  try {
+    User.findOne({ apiKey: req.headers["x-api-key"] }, async (err, user) => {
+      if (err) {
+        // on error
+        res.status(500).json({ error: err });
+      } else {
+        // on success - return user's blog post
+        let blog = user.blogs.find((blog) => blog.slug === req.params.slug);
         res.json({ status: "success", blog });
       }
     });
@@ -134,6 +156,7 @@ const updateBlogById = async (req, res) => {
         blog.metaDescription = req.body.metaDescription;
         blog.metaKeywords = JSON.parse(req.body.metaKeywords);
         blog.status = req.body.status;
+        blog.slug = slug(req.body.title, { lower: true });
         blog.updatedAt = new Date().toISOString();
         user.save();
         res.json({ status: "success", blog });
@@ -177,4 +200,5 @@ module.exports = {
   getBlogById,
   updateBlogById,
   deleteBlogById,
+  getBlogBySlug,
 };
