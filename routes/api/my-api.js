@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const User = require("../../models/user.model");
+const { getAllProjects } = require("../../controllers/projectsController");
+const { getAllBlogs } = require("../../controllers/blogsController");
 // @route   GET api/users
 // @desc    Get users content
 
@@ -10,18 +12,8 @@ router.get("/all", async (req, res) => {
   res.json({ status: "success", user });
 });
 
-router.get("/projects", async (req, res) => {
-  const apiKey = req.headers["x-api-key"];
-  const user = await User.findOne({ apiKey }).select("projects");
+router.get("/projects", getAllProjects);
 
-  res.json({ status: "success", user });
-});
-
-router.get("/blogs", async (req, res) => {
-  const apiKey = req.headers["x-api-key"];
-  const user = await User.findOne({ apiKey }).select("blogs");
-
-  res.json({ status: "success", user });
-});
+router.get("/blogs", getAllBlogs);
 
 module.exports = router;

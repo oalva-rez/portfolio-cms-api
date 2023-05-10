@@ -15,7 +15,10 @@ const randomImageName = (bytes = 32) =>
 // @route GET /
 const getAllProjects = async (req, res) => {
   try {
-    User.findOne({ _id: req.user._id }, async (err, user) => {
+    const queryByValue = req.headers["x-api-key"] || req.user._id;
+    const queryByKey = req.headers["x-api-key"] ? "apiKey" : "_id";
+
+    User.findOne({ [queryByKey]: queryByValue }, async (err, user) => {
       if (err) {
         // on error
         res.status(500).json({ error: err });

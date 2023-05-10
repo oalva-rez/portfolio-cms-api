@@ -14,8 +14,10 @@ const randomImageName = (bytes = 32) =>
 // @desc Get all blogs
 // @route GET /
 const getAllBlogs = async (req, res) => {
+  const queryByValue = req.headers["x-api-key"] || req.user._id;
+  const queryByKey = req.headers["x-api-key"] ? "apiKey" : "_id";
   try {
-    User.findOne({ _id: req.user._id }, async (err, user) => {
+    User.findOne({ [queryByKey]: queryByValue }, async (err, user) => {
       if (err) {
         // on error
         res.status(500).json({ error: err });
