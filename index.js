@@ -14,7 +14,7 @@ require("dotenv").config();
 const mongoString = process.env.MONGO_STRING;
 
 const corsOptions = {
-  origin: true,
+  origin: "*",
 };
 
 const app = express();
