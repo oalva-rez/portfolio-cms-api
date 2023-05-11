@@ -13,9 +13,13 @@ require("dotenv").config();
 
 const mongoString = process.env.MONGO_STRING;
 
+const corsOptions = {
+  origin: true,
+};
+
 const app = express();
 app.use(express.json());
-app.use(cors());
+app.use(cors(corsOptions));
 mongoose.set("strictQuery", true);
 mongoose.connect(mongoString);
 
