@@ -20,6 +20,8 @@ const corsOptions = {
 const app = express();
 app.use(express.json());
 app.use(cors(corsOptions));
+app.options("/api", cors());
+
 mongoose.set("strictQuery", true);
 mongoose.connect(mongoString);
 
