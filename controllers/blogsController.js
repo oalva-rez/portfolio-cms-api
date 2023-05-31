@@ -25,18 +25,21 @@ const getAllBlogs = async (req, res) => {
       } else {
         // on success - return user's blogs
         let blogs = [];
-        if (user.blogs) {
+        if (user?.blogs) {
           for (let blog of user.blogs) {
             const url = await getSignedImageURL(blog);
             blog.imageUrl = url; // add image url to blog object
             blogs.push(blog);
           }
+          // save user to update the session
+          Promise.all(blogs).then((blogs) => {
+            user.save();
+            res.json({ status: "success", blogs });
+          });
+        } else {
+          // res an error code
+          res.status(404).json({ status: "error", error: "Invalid API Key" });
         }
-        // save user to update the session
-        Promise.all(blogs).then((blogs) => {
-          user.save();
-          res.json({ status: "success", blogs });
-        });
       }
     });
   } catch (error) {

@@ -19,7 +19,7 @@ router.post("/", async (req, res) => {
       user.password
     );
     if (isPasswordValid) {
-      const token = jwt.sign({ user }, process.env.TOKEN_SECRET);
+      const token = jwt.sign({ username: user.username }, process.env.TOKEN_SECRET);
       return res.json({ status: "User Found", token, user, error: false });
     } else {
       return res.json({
